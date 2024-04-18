@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -10,12 +11,12 @@ public class Scene
     /// Purely for looking-up a specific scene.
     /// </summary>
     /// <value></value>
-    public string Name { get; }
+    private readonly string _name;
 
     /// <summary>
     /// A reference to a scene manager. Useful for switching scenes.
     /// </summary>
-    public SceneManager SceneManager { get; }
+    private SceneManager _sceneManager;
 
     /// <summary>
     /// All of the instances in the scene.
@@ -29,10 +30,34 @@ public class Scene
     /// <param name="name">The name of the scene.</param>
     /// <param name="actorRegistry">A reference to your actor registry.</param>
     /// <param name="sceneManager">A reference to your scene manager.</param>
-    public Scene(string name, ref SceneManager sceneManager)
+    public Scene(string name)
     {
-        Name = name;
-        SceneManager = sceneManager;
+        _name = name;
+    }
+
+    internal void SetSceneManager(SceneManager sceneManager)
+    {
+        _sceneManager = sceneManager;
+    }
+
+    public string Name()
+    {
+        return _name;
+    }
+
+    public SceneManager SceneManager()
+    {
+        return _sceneManager;
+    }
+
+    public int GetInstanceCount()
+    {
+        return instances.Count;
+    }
+
+    public void AddActor(Actor actor)
+    {
+        instances.Add(actor);
     }
 
     /// <summary>
@@ -66,11 +91,11 @@ public class Scene
     /// Processes all scene entities.
     /// </summary>
     /// <param name="gameTime">N/A</param>
-    public void Process(ref GameTime gameTime)
+    public void Process(GameTime gameTime)
     {
         foreach (Actor instance in instances)
         {
-            instance.Process(ref gameTime);
+            instance.Process(gameTime);
         }
     }
 
@@ -78,11 +103,11 @@ public class Scene
     /// Processes all scene entities.
     /// </summary>
     /// <param name="gameTime">N/A</param>
-    public void Draw(ref SpriteBatch spriteBatch, ref GameTime gameTime)
+    public void Draw(SpriteBatch spriteBatch, GameTime gameTime)
     {
         foreach (Actor instance in instances)
         {
-            instance.Draw(ref spriteBatch, ref gameTime);
+            instance.Draw(spriteBatch, gameTime);
         }
     }
 

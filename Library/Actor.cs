@@ -9,20 +9,35 @@ namespace Monoscene;
 /// </summary>
 public class Actor
 {
-    protected readonly Scene _scene;
-    public ulong Id { get; }
+    private Scene _scene = null;
+    private int _id = -1;
 
     /// <summary>
-    /// Creates a new actor. DO NOT USE THIS! Use Scene.AddActor instead.
+    /// Creates a new actor. Use AddToScene to add it to a scene.
     /// </summary>
-    /// <param name="scene">A reference to a scene</param>
-    public Actor(ref Scene scene)
+    public Actor()
+    {
+    }
+
+    public Scene Scene()
+    {
+        return _scene;
+    }
+
+    public int Id()
+    {
+        return _id;
+    }
+
+    public void AddToScene(Scene scene)
     {
         _scene = scene;
+        scene.AddActor(this);
+        _id = scene.GetInstanceCount() + 1;
     }
 
     public virtual void Enter() { }
-    public virtual void Process(ref GameTime gameTime) { }
-    public virtual void Draw(ref SpriteBatch spriteBatch, ref GameTime gameTime) { }
+    public virtual void Process(GameTime gameTime) { }
+    public virtual void Draw(SpriteBatch spriteBatch, GameTime gameTime) { }
     public virtual void Exit() { }
 }

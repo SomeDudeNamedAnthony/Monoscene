@@ -33,9 +33,9 @@ public class SceneManager
         {
             for (int against = check + 1; against < scenes.Length; against++)
             {
-                if (scenes[check].Name == scenes[against].Name)
+                if (scenes[check].Name() == scenes[against].Name())
                 {
-                    throw new DuplicateSceneException(scenes[check].Name);
+                    throw new DuplicateSceneException(scenes[check].Name());
                 }
             }
         }
@@ -51,6 +51,12 @@ public class SceneManager
     {
         CheckDuplicateScenes(ref scenes);
         _scenes = scenes;
+
+        foreach (Scene scene in _scenes)
+        {
+            scene.SetSceneManager(this);
+        }
+
         Switch(initialScene);
     }
 
@@ -63,7 +69,7 @@ public class SceneManager
     {
         foreach (Scene scene in _scenes)
         {
-            if (scene.Name == sceneName)
+            if (scene.Name() == sceneName)
             {
                 return scene;
             }
@@ -95,11 +101,11 @@ public class SceneManager
     /// Processes all scene entities.
     /// </summary>
     /// <param name="gameTime">N/A</param>
-    public void Process(ref GameTime gameTime)
+    public void Process(GameTime gameTime)
     {
         if (_currentScene != null)
         {
-            _currentScene.Process(ref gameTime);
+            _currentScene.Process(gameTime);
         }
     }
 
@@ -107,11 +113,11 @@ public class SceneManager
     /// Processes all scene entities.
     /// </summary>
     /// <param name="gameTime">N/A</param>
-    public void Draw(ref SpriteBatch spriteBatch, ref GameTime gameTime)
+    public void Draw(SpriteBatch spriteBatch, GameTime gameTime)
     {
         if (_currentScene != null)
         {
-            _currentScene.Draw(ref spriteBatch, ref gameTime);
+            _currentScene.Draw(spriteBatch, gameTime);
         }
     }
 }
