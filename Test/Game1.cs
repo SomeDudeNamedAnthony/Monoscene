@@ -39,7 +39,7 @@ public class Game1 : Game
         _spriteBatch = new SpriteBatch(GraphicsDevice);
 
         framebuffer = new Framebuffer(GraphicsDevice, Window, (int)RESOLUTION.X, (int)RESOLUTION.Y);
-
+        framebuffer.Scale = 0.25F;
         assetManager.Load(Content);
 
         sceneManager = new SceneManager(new Scene[]{

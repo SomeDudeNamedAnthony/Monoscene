@@ -4,19 +4,58 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Monoscene_Test;
 
+/// <summary>
+/// ...
+/// </summary>
 public class Framebuffer
 {
     private readonly RenderTarget2D _target;
-    public readonly GraphicsDevice GraphicsDevice;
     private Rectangle _destinationRectangle;
 
+    public readonly GraphicsDevice GraphicsDevice;
+
+    /// <summary>
+    /// The scale of the buffer.
+    /// </summary>
+    public float Scale { get; set; } = 1.0F;
+
+    /// <summary>
+    /// The offset of the buffer from the top-left of the screen.
+    /// </summary>
     public Vector2 Offset { get; set; } = Vector2.Zero;
+
+    /// <summary>
+    /// Only important when offseting the buffer.
+    /// </summary>
     public Vector2 Origin { get; set; } = Vector2.Zero;
+
+    /// <summary>
+    /// The tint of the buffer.
+    /// </summary>
     public Color Tint { get; set; } = Color.White;
+
+    /// <summary>
+    /// The rotation of the buffer in radians.
+    /// </summary>
     public float Angle { get; set; } = 0.0F;
+
+    /// <summary>
+    /// Wether to flip the buffer horizontally.
+    /// </summary>
     public bool HFlip { get; set; } = false;
+
+    /// <summary>
+    /// Wether to flip the buffer vertically.
+    /// </summary>
     public bool VFlip { get; set; } = false;
 
+    /// <summary>
+    /// Creates a new framebuffer.
+    /// </summary>
+    /// <param name="graphicsDevice">A reference to a graphic device.</param>
+    /// <param name="window">A reference to a game window.</param>
+    /// <param name="width">The width.</param>
+    /// <param name="height">The height.</param>
     public Framebuffer(GraphicsDevice graphicsDevice, GameWindow window, int width, int height)
     {
         window.ClientSizeChanged += OnWindowResize;
@@ -33,32 +72,33 @@ public class Framebuffer
 
     private void ResizeRect()
     {
-        var screenSize = GraphicsDevice.PresentationParameters.Bounds;
-
-        float scaleX = (float)screenSize.Width / _target.Width;
-        float scaleY = (float)screenSize.Height / _target.Height;
-        float scale = Math.Min(scaleX, scaleY);
-
+        Rectangle screenSize = GraphicsDevice.PresentationParameters.Bounds;
+        float scale = Math.Min((float)screenSize.Width / _target.Width, (float)screenSize.Height / _target.Height);
         int newWidth = (int)(_target.Width * scale);
         int newHeight = (int)(_target.Height * scale);
-
-        int posX = (screenSize.Width - newWidth) / 2;
-        int posY = (screenSize.Height - newHeight) / 2;
-
-        _destinationRectangle = new Rectangle(posX, posY, newWidth, newHeight);
+        _destinationRectangle = new Rectangle((screenSize.Width - newWidth) / 2, (screenSize.Height - newHeight) / 2, newWidth, newHeight);
     }
 
+    /// <summary>
+    /// Enables the buffer.
+    /// </summary>
+    /// <param name="color">The color to clear the framebuffer.</param>
     public void Begin(Color color)
     {
         GraphicsDevice.SetRenderTarget(_target);
         GraphicsDevice.Clear(color);
     }
 
+    /// <summary>
+    /// Disables the buffer and draws it.
+    /// </summary>
+    /// <param name="spriteBatch">A reference to a sprite batch.</param>
+    /// <param name="color">The color of the border.</param>
     public void End(SpriteBatch spriteBatch, Color color)
     {
         GraphicsDevice.SetRenderTarget(null);
         GraphicsDevice.Clear(color);
-        spriteBatch.Begin();
+        spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointClamp);
         spriteBatch.Draw(_target, _destinationRectangle, new Rectangle((int)Offset.X, (int)Offset.Y, _target.Width, _target.Height), Tint, Angle, Origin,
         (HFlip && VFlip) ? SpriteEffects.FlipHorizontally | SpriteEffects.FlipVertically :
         HFlip ? SpriteEffects.FlipHorizontally :
