@@ -1,10 +1,37 @@
-using System;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.Graphics;
 
-namespace Monoscene;
+namespace Monoscene_Test;
 
-public class DuplicateSceneException : Exception
+public sealed class AssetManager
 {
-    public DuplicateSceneException(string sceneName) : base(string.Format("The scene \"{0}\" has one or more duplicates.", sceneName)) { }
+    private static AssetManager instance = null;
+    private static readonly object padlock = new();
+
+    public SpriteFont defaultFont { get; set; }
+
+    private AssetManager()
+    {
+
+    }
+
+    public void Load(ContentManager contentManager)
+    {
+        defaultFont = contentManager.Load<SpriteFont>("DefaultFont");
+    }
+
+    public static AssetManager Instance
+    {
+        get
+        {
+            lock (padlock)
+            {
+                instance ??= new AssetManager();
+                return instance;
+            }
+        }
+    }
 }
 
 /*

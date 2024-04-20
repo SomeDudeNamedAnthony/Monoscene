@@ -1,10 +1,19 @@
-using System;
+using Monoscene;
 
-namespace Monoscene;
+namespace Monoscene_Test;
 
-public class DuplicateSceneException : Exception
+public class DebugScene : Scene
 {
-    public DuplicateSceneException(string sceneName) : base(string.Format("The scene \"{0}\" has one or more duplicates.", sceneName)) { }
+    private readonly AssetManager assetManager = AssetManager.Instance;
+    public DebugScene() : base("DebugScene")
+    {
+    }
+
+    public override void Instantiate()
+    {
+        FrameCounter frameCounter = new FrameCounter(assetManager.defaultFont);
+        frameCounter.AddToScene(this);
+    }
 }
 
 /*
